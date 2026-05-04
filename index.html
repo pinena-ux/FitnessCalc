@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fitness Calculator</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+
+      /* ✅ Background image */
+      background-image: url("https://domf5oio6qrcr.cloudfront.net/medialibrary/15226/b8da1998-87b0-4bf9-8f57-c2779f0e7d56.jpg");
+        background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+
+
+
+
+      /* center app */
+      display: flex;
+      justify-content: center;
+      padding: 30px;
+    }
+
+    /* dark overlay so text is readable */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: -1;
+    }
+
+    .container {
+  background: #1e1e1e;   /* dark grey / almost black */
+  color: white;          /* ALL text white */
+  padding: 20px;
+  width: 380px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+
+/* headings */
+h2, h4 {
+  color: white;
+}
+
+/* inputs + dropdown */
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #2b2b2b;
+  color: white;
+}
+
+/* button */
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #3a86ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #265df2;
+}
+
+/* result boxes */
+.box {
+  margin-top: 10px;
+  padding: 10px;
+  background: #2a2a2a;
+  border-radius: 6px;
+  color: white;
+}
+
+/* food list text */
+ul {
+  padding-left: 20px;
+  color: white;
+}
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>Fitness Calculator</h2>
+
+  <!-- TDEE -->
+  <h4>Maintenance Calories</h4>
+
+  <input id="age" placeholder="Age">
+  <input id="weight" placeholder="Weight (kg)">
+  <input id="height" placeholder="Height (cm)">
+
+  <select id="sex">
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+  </select>
+
+  <button onclick="calcTDEE()">Calculate</button>
+
+  <div class="box" id="tdeeResult"></div>
+
+  <!-- FOOD -->
+  <h4>Food Tracker</h4>
+
+  <select id="food">
+    <option value="egg">1 Boiled Egg (70 kcal)</option>
+    <option value="banana">1 Banana (105 kcal)</option>
+    <option value="chicken">100g Chicken (165 kcal)</option>
+  </select>
+
+  <input id="qty" placeholder="Quantity">
+
+  <button onclick="addFood()">Add Food</button>
+
+  <div class="box">
+    <b>Foods:</b>
+    <ul id="foodList"></ul>
+  </div>
+
+  <div class="box" id="totalCalories">
+    Total Calories: 0 kcal
+  </div>
+
+  <div class="box" id="macroResult">
+    Protein: 0g | Carbs: 0g | Fat: 0g
+  </div>
+
+</div>
+
+<script>
+
+let foodsDB = {
+  egg: { cal: 70, protein: 6, carbs: 1, fat: 5 },
+  banana: { cal: 105, protein: 1, carbs: 27, fat: 0 },
+  chicken: { cal: 165, protein: 31, carbs: 0, fat: 4 }
+};
+
+let totalCalories = 0;
+let totalProtein = 0;
+let totalCarbs = 0;
+let totalFat = 0;
+
+// TDEE CALC
+function calcTDEE() {
+  let age = Number(document.getElementById("age").value);
+  let weight = Number(document.getElementById("weight").value);
+  let height = Number(document.getElementById("height").value);
+  let sex = document.getElementById("sex").value;
+
+  let bmr;
+
+  if (sex === "male") {
+    bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+  } else {
+    bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+  }
+
+  let maintenance = bmr * 1.2;
+
+  document.getElementById("tdeeResult").innerHTML =
+    "Maintenance Calories: " + Math.round(maintenance) + " kcal";
+}
+
+// FOOD ADD
+function addFood() {
+  let food = document.getElementById("food").value;
+  let qty = Number(document.getElementById("qty").value);
+  if (!qty) qty = 1;
+
+  let item = foodsDB[food];
+
+  let cal = item.cal * qty;
+  let protein = item.protein * qty;
+  let carbs = item.carbs * qty;
+  let fat = item.fat * qty;
+
+  totalCalories += cal;
+  totalProtein += protein;
+  totalCarbs += carbs;
+  totalFat += fat;
+
+  // list
+  let li = document.createElement("li");
+  li.innerHTML = food + " x" + qty + " = " + cal + " kcal";
+  document.getElementById("foodList").appendChild(li);
+
+  // totals
+  document.getElementById("totalCalories").innerHTML =
+    "Total Calories: " + totalCalories + " kcal";
+
+  document.getElementById("macroResult").innerHTML =
+    "Protein: " + totalProtein + "g | Carbs: " + totalCarbs + "g | Fat: " + totalFat + "g";
+}
+
+</script>
+
+</body>
+</html>
